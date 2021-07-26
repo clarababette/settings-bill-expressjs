@@ -38,8 +38,12 @@ app.post('/action', (req, res) => {
   res.redirect('/');
 });
 app.get('/actions', (req, res) => {
-  res.render('actions', {actions: settingsBill.actions()});
-  console.log(settingsBill.actions());
+  const actionList = settingsBill.actions().map((action) => {
+    const rtnAction = {...action};
+    rtnAction.timestamp = moment(action.timestamp).fromNow();
+    return rtnAction;
+  });
+  res.render('actions', {actions: actionList});
 });
 app.get('/', (req, res) => {
   let currentLevel = '';
@@ -56,9 +60,10 @@ app.get('/', (req, res) => {
 });
 app.get('/actions/:type', (req, res) => {
   const actionType = req.params.type;
-  const actionList = settingsBill.actionsFor(actionType);
-  actionList.forEach((action) => {
-    action.timestamp = moment(action.timestamp).fromNow();
+  const actionList = settingsBill.actionsFor(actionType).map((action) => {
+    const rtnAction = {...action};
+    rtnAction.timestamp = moment(action.timestamp).fromNow();
+    return rtnAction;
   });
   res.render('actions', {
     actions: actionList,
