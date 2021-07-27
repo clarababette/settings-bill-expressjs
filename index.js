@@ -41,6 +41,7 @@ app.get('/actions', (req, res) => {
   const actionList = settingsBill.actions().map((action) => {
     const rtnAction = {...action};
     rtnAction.timestamp = moment(action.timestamp).fromNow();
+    rtnAction.cost = rtnAction.cost.toFixed(2);
     return rtnAction;
   });
   res.render('actions', {actions: actionList});
@@ -52,8 +53,15 @@ app.get('/', (req, res) => {
   } else if (settingsBill.hasReachedWarningLevel()) {
     currentLevel = 'warning';
   }
+  const formattedTotals = {...settingsBill.totals()};
+  console.log(formattedTotals);
+  formattedTotals.smsTotal = formattedTotals.smsTotal.toFixed(2);
+  formattedTotals.callTotal = formattedTotals.callTotal.toFixed(2);
+  formattedTotals.grandTotal = formattedTotals.grandTotal.toFixed(2);
+  console.log(formattedTotals);
+  console.log(settingsBill.totals());
   res.render('home', {
-    totals: settingsBill.totals(),
+    totals: formattedTotals,
     billsettings: settingsBill.getSettings(),
     level: currentLevel,
   });
@@ -63,6 +71,7 @@ app.get('/actions/:type', (req, res) => {
   const actionList = settingsBill.actionsFor(actionType).map((action) => {
     const rtnAction = {...action};
     rtnAction.timestamp = moment(action.timestamp).fromNow();
+    rtnAction.cost = rtnAction.cost.toFixed(2);
     return rtnAction;
   });
   res.render('actions', {
